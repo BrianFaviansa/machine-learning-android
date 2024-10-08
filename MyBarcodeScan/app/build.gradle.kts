@@ -37,7 +37,7 @@ android {
 }
 
 dependencies {
-    val cameraxVersion = "1.5.0-alpha02"
+    val cameraxVersion = "1.3.4"
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")

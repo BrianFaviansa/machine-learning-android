@@ -13,8 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis.COORDINATE_SYSTEM_VIEW_REFERENCED
 import androidx.camera.core.Preview
-import androidx.camera.lifecycle.LifecycleCameraProvider
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.mlkit.vision.MlKitAnalyzer
 import androidx.camera.view.LifecycleCameraController
 import androidx.core.content.ContextCompat
