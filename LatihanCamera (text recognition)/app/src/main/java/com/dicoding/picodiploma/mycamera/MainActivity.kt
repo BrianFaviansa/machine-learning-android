@@ -115,9 +115,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun analyzeImage(uri: Uri) {
         binding.progressIndicator.visibility = View.VISIBLE
-        val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-        val inputImage = InputImage.fromFilePath(this, uri)
 
+        val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        val inputImage: InputImage = InputImage.fromFilePath(this, uri)
         textRecognizer.process(inputImage)
             .addOnSuccessListener { visionText: Text ->
                 val detectedText: String = visionText.text
@@ -136,10 +136,6 @@ class MainActivity : AppCompatActivity() {
                 binding.progressIndicator.visibility = View.GONE
                 showToast(it.message.toString())
             }
-
-        val intent = Intent(this, ResultActivity::class.java)
-        intent.putExtra(ResultActivity.EXTRA_IMAGE_URI, currentImageUri.toString())
-        startActivity(intent)
     }
 
     private fun showToast(message: String) {
