@@ -58,6 +58,8 @@ class ResultActivity : AppCompatActivity() {
             }
             .addOnFailureListener { exception ->
                 showToast(getString(R.string.downloading_model_fail))
+                print(exception.stackTrace)
+                indonesianEnglishTranslator.close()
                 binding.progressIndicator.visibility = View.GONE
             }
         lifecycle.addObserver(indonesianEnglishTranslator)
