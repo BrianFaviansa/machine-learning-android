@@ -31,7 +31,7 @@ class ImageClassifierHelper(
     private var imageClassifier: ImageClassifier? = null
 
     init {
-        TfLiteGpu.isGpuDelegateAvailable(context).onSuccessTask { gpuAvailable ->
+        TfLiteGpu.isGpuDelegateAvailable(context).onSuccessTask { gpuAvailable: Boolean ->
             val optionsBuilder = TfLiteInitializationOptions.builder()
             if (gpuAvailable) {
                 optionsBuilder.setEnableGpuDelegateSupport(true)
