@@ -49,26 +49,26 @@ class CameraActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onResults(results: MutableList<Detection>?, inferenceTime: Long) {
+                override fun onResults(
+                    results: MutableList<Detection>?,
+                    inferenceTime: Long,
+                    imageHeight: Int,
+                    imageWidth: Int
+                ) {
                     runOnUiThread {
                         results?.let { it ->
                             if (it.isNotEmpty() && it[0].categories.isNotEmpty()) {
                                 println(it)
-                                val builder = StringBuilder()
-                                for (result in results) {
-                                    val displayResult =
-                                        "${result.categories[0].label} " + NumberFormat.getPercentInstance()
-                                            .format(result.categories[0].score).trim()
-                                    builder.append("$displayResult \n")
-                                }
-                                binding.tvResult.text = builder.toString()
-                                binding.tvResult.visibility = View.VISIBLE
-                                binding.tvInferenceTime.text = "$inferenceTime ms"
+                                binding.overlay.setResults(
+                                    results, imageHeight, imageWidth
+                                )
+                                "$inferenceTime ms".also { binding.tvInferenceTime.text = it }
                             } else {
-                                binding.tvResult.text = ""
+                                binding.overlay.clear()
                                 binding.tvInferenceTime.text = ""
                             }
                         }
+                        binding.overlay.invalidate()
                     }
                 }
             }
