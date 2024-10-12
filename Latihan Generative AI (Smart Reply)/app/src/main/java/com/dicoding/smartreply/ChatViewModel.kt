@@ -46,7 +46,8 @@ class ChatViewModel : ViewModel() {
         _chatHistory.value = messages
     }
 
-    fun addMessage(message: String) {
+    fun addMessage(message: String){
+
         val user = _pretendingAsAnotherUser.value!!
 
         var list: ArrayList<Message> = chatHistory.value ?: ArrayList()
@@ -55,13 +56,15 @@ class ChatViewModel : ViewModel() {
         clearSmartReplyOptions()
 
         _chatHistory.value = list
+
     }
 
     private fun initSmartReplyOptionsGenerator() {
-        _smartReplyOptions.addSource(pretendingAsAnotherUser) {isPretendingAsAnotherUser ->
+        _smartReplyOptions.addSource(pretendingAsAnotherUser) { isPretendingAsAnotherUser ->
             val list = chatHistory.value
 
             if (list.isNullOrEmpty()) {
+                _smartReplyOptions.value = emptyList()
                 return@addSource
             } else {
                 generateSmartReplyOptions(list, isPretendingAsAnotherUser)
@@ -71,9 +74,11 @@ class ChatViewModel : ViewModel() {
             }
         }
 
-        _smartReplyOptions.addSource(chatHistory) {conversations ->
+        _smartReplyOptions.addSource(chatHistory) { conversations ->
             val isPretendingAsAnotherUser = pretendingAsAnotherUser.value
+
             if (isPretendingAsAnotherUser != null && conversations.isNullOrEmpty()) {
+                _smartReplyOptions.value = emptyList()
                 return@addSource
             } else {
                 generateSmartReplyOptions(conversations, isPretendingAsAnotherUser!!)
@@ -86,16 +91,20 @@ class ChatViewModel : ViewModel() {
 
     private fun generateSmartReplyOptions(
         messages: List<Message>,
-        isPretendingAnotherUser: Boolean
+        isPretendingAsAnotherUser: Boolean
     ): Task<List<SmartReplySuggestion>> {
         val lastMessage = messages.last()
 
-        if (lastMessage.isLocalUser != isPretendingAnotherUser) {
+        // Pastikan pesan terakhir berasal dari pengguna yang berbeda dari yang sedang berpura-pura
+        if (lastMessage.isLocalUser != isPretendingAsAnotherUser) {
             return Tasks.forException(Exception("Tidak menjalankan smart reply!"))
         }
+
+        // Inisialisasi daftar percakapan untuk smart reply
         val chatConversations = ArrayList<TextMessage>()
         for (message in messages) {
-            if (message.isLocalUser != isPretendingAnotherUser) {
+            if (message.isLocalUser != isPretendingAsAnotherUser) {
+                // Jika pesan berasal dari pengguna lokal, tambahkan ke daftar percakapan lokal
                 chatConversations.add(
                     TextMessage.createForLocalUser(
                         message.text,
@@ -103,28 +112,44 @@ class ChatViewModel : ViewModel() {
                     )
                 )
             } else {
-                TextMessage.createForRemoteUser(message.text, message.timestamp, anotherUserID)
+                // Jika pesan berasal dari pengguna remote, tambahkan ke daftar percakapan remote
+                chatConversations.add(
+                    TextMessage.createForRemoteUser(
+                        message.text,
+                        message.timestamp,
+                        anotherUserID
+                    )
+                )
             }
         }
+
+        // Cek apakah daftar percakapan tidak kosong
+        if (chatConversations.isEmpty()) {
+            return Tasks.forException(IllegalArgumentException("Daftar pesan tidak boleh kosong"))
+        }
+
+        // Gunakan smart reply untuk mendapatkan saran balasan
         return smartReply
             .suggestReplies(chatConversations)
             .continueWith { task ->
                 val result = task.result
                 when (result.status) {
-                    SmartReplySuggestionResult.STATUS_NOT_SUPPORTED_LANGUAGE -> _errorMessage.value =
-                        "Unable to generate options due to a non-English language was used"
+                    SmartReplySuggestionResult.STATUS_NOT_SUPPORTED_LANGUAGE ->
+                        _errorMessage.value =
+                            "Unable to generate options due to a non-English language was used"
 
-                    SmartReplySuggestionResult.STATUS_NO_REPLY -> _errorMessage.value =
-                        "Unable to generate options due to no appropriate response found"
+                    SmartReplySuggestionResult.STATUS_NO_REPLY ->
+                        _errorMessage.value =
+                            "Unable to generate options due to no appropriate response found"
                 }
                 result.suggestions
             }
             .addOnFailureListener { e ->
-                _errorMessage.value = "An error has occurred on Smart Reply Instance"
+                _errorMessage.value = "An error has occurred on Smart Reply Instance: ${e.message}"
             }
     }
 
-    private fun clearSmartReplyOptions() {
+    private fun clearSmartReplyOptions(){
         _smartReplyOptions.value = ArrayList()
     }
 

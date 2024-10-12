@@ -2,8 +2,8 @@ package com.dicoding.smartreply
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.icu.util.Calendar
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -31,6 +31,7 @@ class ChatFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -75,7 +76,7 @@ class ChatFragment : Fragment() {
             val chatHistory = ArrayList<Message>()
             chatHistory.add(
                 Message(
-                    "Hello Friend. How are you today?",
+                    "Hello friend. How are you today?",
                     false,
                     System.currentTimeMillis()
                 )
@@ -181,11 +182,31 @@ class ChatFragment : Fragment() {
 
     private fun generateBasicChatHistory() {
         val chatHistory = ArrayList<Message>()
+        val calendar = Calendar.getInstance()
 
+        calendar.add(Calendar.MINUTE, -10)
+        chatHistory.add(Message("Hello", true, calendar.timeInMillis))
+
+        calendar.add(Calendar.MINUTE, 10)
+        chatHistory.add(Message("Hey", false, calendar.timeInMillis))
+
+        chatViewModel.setMessages(chatHistory)
     }
 
     private fun generateSensitiveChatHistory() {
+        val chatHistory = ArrayList<Message>()
+        val calendar = Calendar.getInstance()
 
+        calendar.add(Calendar.MINUTE, -10)
+        chatHistory.add(Message("Hi", false, calendar.timeInMillis))
+
+        calendar.add(Calendar.MINUTE, 1)
+        chatHistory.add(Message("How are you?", true, calendar.timeInMillis))
+
+        calendar.add(Calendar.MINUTE, 10)
+        chatHistory.add(Message("My cat died", false, calendar.timeInMillis))
+
+        chatViewModel.setMessages(chatHistory)
     }
 
 }
