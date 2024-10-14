@@ -15,6 +15,11 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        buildConfigField(
+            "String",
+            "BASE_URL",
+            "\"https://newsapi.org/v2/top-headlines?q=cancer&category=health&language=en&apiKey=73b85bbb411444c298133a45f2a8b519\""
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -59,7 +64,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
     implementation("androidx.camera:camera-core:1.3.4")
     implementation("androidx.activity:activity-ktx:1.9.2")
-    implementation ("org.jetbrains.kotlin:kotlin-stdlib:2.0.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.10")
     implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
     implementation("com.github.yalantis:ucrop:2.2.8")
     ksp("androidx.room:room-compiler:2.6.1")

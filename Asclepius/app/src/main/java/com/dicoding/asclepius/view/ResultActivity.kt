@@ -18,11 +18,11 @@ class ResultActivity : AppCompatActivity() {
         binding = ActivityResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val imageUri = intent.getParcelableExtra<Uri>(EXTRA_IMAGE_URI)
+        val imageUri = intent.getStringExtra(EXTRA_IMAGE_URI)?.let { Uri.parse(it) }
         val prediction = intent.getStringExtra(EXTRA_PREDICTION)
 
         binding.resultImage.setImageURI(imageUri)
-        binding.resultText.text = prediction
+        binding.resultText.text = prediction ?: getString(R.string.empty_image_warning)
     }
 
     companion object {

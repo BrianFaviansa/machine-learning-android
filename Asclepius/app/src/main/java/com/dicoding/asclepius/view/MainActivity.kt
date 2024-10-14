@@ -52,9 +52,8 @@ class MainActivity : AppCompatActivity() {
                                         }
                                 }
 
-
-                                val confidencePercentage = convertToPercent(confidence)
-                                moveToResult("Dikategorikan sebagai: $category, dengan tingkat kepastian (confidence): $confidencePercentage")
+                                val accuration = convertToPercent(confidence)
+                                moveToResult("$category dengan akurasi : $accuration")
                             }
                         } catch (e: Exception) {
                             onError(e.message.toString())
@@ -83,10 +82,9 @@ class MainActivity : AppCompatActivity() {
         if (currentImageUri != null) {
             binding.progressIndicator.visibility = View.VISIBLE
             imageClassifierHelper.classifyStaticImage(currentImageUri!!)
+        } else {
+            showToast(getString(R.string.empty_image_warning))
         }
-        val intent = Intent(this, ResultActivity::class.java)
-        intent.putExtra(ResultActivity.EXTRA_IMAGE_URI, currentImageUri.toString())
-        startActivity(intent)
     }
 
     private val launcherGallery = registerForActivityResult(
@@ -102,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun moveToResult(prediction: String) {
         val intent = Intent(this, ResultActivity::class.java)
-        intent.putExtra(ResultActivity.EXTRA_IMAGE_URI, currentImageUri)
+        intent.putExtra(ResultActivity.EXTRA_IMAGE_URI, currentImageUri.toString())
         intent.putExtra(ResultActivity.EXTRA_PREDICTION, prediction)
         startActivity(intent)
     }
