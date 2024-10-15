@@ -1,6 +1,5 @@
 package com.dicoding.asclepius.view
 
-import android.Manifest
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -8,15 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat.startActivity
 import com.dicoding.asclepius.R
 import com.dicoding.asclepius.databinding.ActivityMainBinding
 import com.dicoding.asclepius.helper.ImageClassifierHelper
+import com.dicoding.asclepius.utils.Utils.displayToast
+import com.dicoding.asclepius.utils.Utils.formatPercent
 import org.tensorflow.lite.task.vision.classifier.Classifications
-import java.text.NumberFormat
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -33,7 +31,7 @@ class MainActivity : AppCompatActivity() {
             context = this@MainActivity,
             classifierListener = object : ImageClassifierHelper.ClassifierListener {
                 override fun onError(error: String) {
-                    showToast(error)
+                    displayToast(this@MainActivity, error)
                 }
 
                 override fun onResults(results: List<Classifications>?, inferenceTime: Long) {
@@ -52,8 +50,8 @@ class MainActivity : AppCompatActivity() {
                                         }
                                 }
 
-                                val accuration = convertToPercent(confidence)
-                                moveToResult("$category with accuracy : $accuration")
+                                val accuracy = formatPercent(confidence)
+                                moveToResult("$category with accuracy : $accuracy")
                             }
                         } catch (e: Exception) {
                             onError(e.message.toString())
@@ -83,7 +81,7 @@ class MainActivity : AppCompatActivity() {
             binding.progressIndicator.visibility = View.VISIBLE
             imageClassifierHelper.classifyStaticImage(currentImageUri!!)
         } else {
-            showToast(getString(R.string.empty_image_warning))
+            displayToast(this@MainActivity, getString(R.string.empty_image_warning))
         }
     }
 
@@ -103,15 +101,5 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra(ResultActivity.EXTRA_IMAGE_URI, currentImageUri.toString())
         intent.putExtra(ResultActivity.EXTRA_PREDICTION, prediction)
         startActivity(intent)
-    }
-
-    fun convertToPercent(value: Float): String {
-        val percentage = value * 100
-        val roundedPercentage = kotlin.math.round(percentage).toInt()
-        return "$roundedPercentage%"
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

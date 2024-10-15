@@ -15,6 +15,7 @@ abstract class AsclepiusDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var instance: AsclepiusDatabase? = null
+
         fun getInstance(context: Context): AsclepiusDatabase = instance ?: synchronized(this) {
             instance ?: Room.databaseBuilder(
                 context.applicationContext, AsclepiusDatabase::class.java, "asclepius_db"
