@@ -18,8 +18,9 @@ android {
         buildConfigField(
             "String",
             "BASE_URL",
-            "\"https://newsapi.org/v2/top-headlines?q=cancer&category=health&language=en&apiKey=73b85bbb411444c298133a45f2a8b519\""
+            "\"https://newsapi.org/v2/\""
         )
+        buildConfigField("String", "API_KEY", "\"73b85bbb411444c298133a45f2a8b519\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -43,6 +44,7 @@ android {
     buildFeatures {
         viewBinding = true
         mlModelBinding = true
+        buildConfig = true
     }
 }
 

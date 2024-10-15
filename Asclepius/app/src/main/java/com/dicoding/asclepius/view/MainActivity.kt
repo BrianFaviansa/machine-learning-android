@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                                 }
 
                                 val accuration = convertToPercent(confidence)
-                                moveToResult("$category dengan akurasi : $accuration")
+                                moveToResult("$category with accuracy : $accuration")
                             }
                         } catch (e: Exception) {
                             onError(e.message.toString())
