@@ -69,6 +69,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.10")
     implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
     implementation("com.github.yalantis:ucrop:2.2.8")
+    implementation("androidx.activity:activity:1.9.2")
     ksp("androidx.room:room-compiler:2.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

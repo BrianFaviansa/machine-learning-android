@@ -9,5 +9,6 @@
     <string name="empty_image_warning">The image can\'t be empty</string>
     <string name="history">History</string>
     <string name="news">News</string>
+    <string name="news_photo">News Photo</string>
     <string name="recent_history">Recent History</string>
 </resources>

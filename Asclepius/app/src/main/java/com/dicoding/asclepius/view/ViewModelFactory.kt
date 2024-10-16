@@ -8,26 +8,24 @@ import com.dicoding.asclepius.data.NewsRepository
 import com.dicoding.asclepius.di.Injection
 
 class ViewModelFactory(
-    private val newsRepository: NewsRepository,
-    private val historyRepository: HistoryRepository
+    private val newsRepository: NewsRepository, private val historyRepository: HistoryRepository
 ) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return MainViewModel(newsRepository, historyRepository) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 
     companion object {
         @Volatile
         private var instance: ViewModelFactory? = null
 
-        fun getInstance(context: Context): ViewModelFactory =
-            instance ?: synchronized(this) {
-                instance ?: ViewModelFactory(
-                    Injection.provideNewsRepository(context),
-                    Injection.provideHistoryRepository(context)
-                ).also { instance = it }
-            }
+        fun getInstance(context: Context): ViewModelFactory = instance ?: synchronized(this) {
+            instance ?: ViewModelFactory(
+                Injection.provideNewsRepository(context),
+                Injection.provideHistoryRepository(context)
+            ).also { instance = it }
+        }
     }
 }

@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +20,7 @@ import com.dicoding.asclepius.databinding.ActivityMainBinding
 import com.dicoding.asclepius.helper.ImageClassifierHelper
 import com.dicoding.asclepius.utils.Utils.displayToast
 import com.dicoding.asclepius.utils.Utils.formatPercent
+import com.dicoding.asclepius.view.news.NewsActivity
 import com.yalantis.ucrop.UCrop
 import org.tensorflow.lite.task.vision.classifier.Classifications
 import java.io.File
@@ -43,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
         setSupportActionBar(binding.toolbarMain)
 
@@ -80,6 +84,26 @@ class MainActivity : AppCompatActivity() {
 
         binding.galleryButton.setOnClickListener { startGallery() }
         binding.analyzeButton.setOnClickListener { analyzeImage() }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.actionNews -> {
+                val intent = Intent(this, NewsActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.actionHistory -> {
+                // Handle history action
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun startGallery() {

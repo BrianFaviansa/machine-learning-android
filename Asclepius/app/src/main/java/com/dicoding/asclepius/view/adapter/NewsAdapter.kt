@@ -4,8 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.dicoding.asclepius.data.local.entity.NewsEntity
 import com.dicoding.asclepius.databinding.ItemNewsBinding
+import com.dicoding.asclepius.utils.Utils.formatCardDate
 import com.dicoding.asclepius.view.MainViewModel
 
 class NewsAdapter(private val viewModel: MainViewModel) :
@@ -19,16 +21,19 @@ class NewsAdapter(private val viewModel: MainViewModel) :
                 newsTitle.text = news.title
                 newsDescription.text = news.description
                 newsAuthor.text = news.author
-                newsDate.text = news.publishedAt
+                newsDate.text = formatCardDate(news.publishedAt.toString())
+                Glide.with(itemView.context)
+                    .load(news.urlToImage)
+                    .into(newsPhoto)
             }
         }
     }
 
-    fun setNewsList() {
+    fun setNewsList(newsList: List<NewsEntity>) {
         val diffCallback = NewsDiffCallback(newsList, newsList)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
-        newsList.clear()
-        newsList.addAll(newsList)
+        this.newsList.clear()
+        this.newsList.addAll(newsList)
         diffResult.dispatchUpdatesTo(this)
     }
 

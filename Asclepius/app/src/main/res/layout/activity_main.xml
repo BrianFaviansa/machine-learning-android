@@ -22,8 +22,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
+                app:menu="@menu/menu"
                 android:title="@string/app_name"
-                app:menu="@menu/menu" />
+                />
         </com.google.android.material.appbar.AppBarLayout>
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
