@@ -13,13 +13,20 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dicoding.asclepius.R
+import com.dicoding.asclepius.data.Result
+import com.dicoding.asclepius.data.local.entity.HistoryEntity
 import com.dicoding.asclepius.databinding.ActivityMainBinding
 import com.dicoding.asclepius.helper.ImageClassifierHelper
 import com.dicoding.asclepius.utils.Utils.displayToast
 import com.dicoding.asclepius.utils.Utils.formatPercent
+import com.dicoding.asclepius.view.adapter.HistoryAdapter
+import com.dicoding.asclepius.view.history.HistoryActivity
 import com.dicoding.asclepius.view.news.NewsActivity
 import com.yalantis.ucrop.UCrop
 import org.tensorflow.lite.task.vision.classifier.Classifications
@@ -28,6 +35,12 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var imageClassifierHelper: ImageClassifierHelper
+    private val viewModel: MainViewModel by viewModels {
+        ViewModelFactory.getInstance(this)
+    }
+
+    private lateinit var historyAdapter: HistoryAdapter
+    private lateinit var rvHistory: RecyclerView
 
     private var currentImageUri: Uri? = null
 
@@ -46,11 +59,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
         setSupportActionBar(binding.toolbarMain)
 
-        imageClassifierHelper = ImageClassifierHelper(context = this@MainActivity,
+        if (!allPermissionsGranted()) {
+            requestPermission.launch(REQUIRED_PERMISSION)
+        }
+
+        binding.galleryButton.setOnClickListener { startGallery() }
+        binding.analyzeButton.setOnClickListener { analyzeImage() }
+
+        imageClassifierHelper = ImageClassifierHelper(
+            context = this@MainActivity,
             classifierListener = object : ImageClassifierHelper.ClassifierListener {
                 override fun onError(error: String) {
                     displayToast(this@MainActivity, error)
@@ -72,6 +92,38 @@ class MainActivity : AppCompatActivity() {
                                         }
                                 }
 
+                                val historyData = currentImageUri?.let { uri ->
+                                    this@MainActivity.contentResolver.openInputStream(uri)
+                                        ?.use { inputStream ->
+                                            val byteArray = inputStream.readBytes()
+                                            HistoryEntity(
+                                                category = category,
+                                                confidenceScore = confidence,
+                                                imageUri = byteArray,
+                                                timestamp = System.currentTimeMillis().toString()
+                                            )
+                                        }
+                                }
+                                if (historyData != null) {
+                                    viewModel.insertHistory(historyData).observe(this@MainActivity) { results ->
+                                        if (results != null) {
+                                            when (results) {
+                                                is Result.Loading -> {
+                                                    binding.progressIndicator.visibility = View.VISIBLE
+                                                }
+                                                is  Result.Success -> {
+                                                    binding.progressIndicator.visibility = View.GONE
+                                                    displayToast(this@MainActivity, getString(R.string.history_saved))
+                                                }
+                                                is  Result.Error -> {
+                                                    binding.progressIndicator.visibility = View.GONE
+                                                    displayToast(this@MainActivity, results.error)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
                                 val accuracy = formatPercent(confidence)
                                 goToResult("$category with accuracy : $accuracy")
                             }
@@ -80,10 +132,10 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-            })
+            }
+        )
 
-        binding.galleryButton.setOnClickListener { startGallery() }
-        binding.analyzeButton.setOnClickListener { analyzeImage() }
+        setupRecyclerView()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -98,8 +150,10 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
                 true
             }
+
             R.id.actionHistory -> {
-                // Handle history action
+                val intent = Intent(this, HistoryActivity::class.java)
+                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -161,6 +215,32 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra(ResultActivity.EXTRA_IMAGE_URI, currentImageUri.toString())
         intent.putExtra(ResultActivity.EXTRA_PREDICTION, prediction)
         startActivity(intent)
+    }
+
+    private fun setupRecyclerView() {
+        rvHistory = binding.rvHistory
+        rvHistory.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        historyAdapter = HistoryAdapter(viewModel)
+        rvHistory.setHasFixedSize(true)
+        rvHistory.adapter = historyAdapter
+
+        viewModel.getHistories().observe(this) { histories ->
+            if (histories != null) {
+                when (histories) {
+                    Result.Loading -> {
+                        binding.progressIndicator.visibility = View.VISIBLE
+                    }
+                    is Result.Success -> {
+                        binding.progressIndicator.visibility = View.GONE
+                        historyAdapter.setHistoryList(histories.data)
+                    }
+                    is Result.Error -> {
+                        binding.progressIndicator.visibility = View.GONE
+                        displayToast(this, histories.error)
+                    }
+                }
+            }
+        }
     }
 
     companion object {

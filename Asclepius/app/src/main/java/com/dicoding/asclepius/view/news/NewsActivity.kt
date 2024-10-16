@@ -27,7 +27,7 @@ class NewsActivity : AppCompatActivity() {
         binding = ActivityNewsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbarNews)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setupRecyclerView()

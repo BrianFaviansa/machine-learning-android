@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.news.NewsActivity">
+    tools:context=".view.history.HistoryActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -14,12 +14,12 @@
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarNews"
+            android:id="@+id/toolbarHistory"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
-            app:title="@string/news" />
+            app:title="@string/history" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <ProgressBar
@@ -30,9 +30,10 @@
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvNewsActivity"
+        android:id="@+id/rvHistoryActivity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp" />
+
 
 </LinearLayout>
