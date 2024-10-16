@@ -1,5 +1,6 @@
 package com.dicoding.asclepius.view
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.dicoding.asclepius.data.HistoryRepository
@@ -21,12 +22,12 @@ class ViewModelFactory(
         @Volatile
         private var instance: ViewModelFactory? = null
 
-        fun getInstance(): ViewModelFactory =
+        fun getInstance(context: Context): ViewModelFactory =
             instance ?: synchronized(this) {
                 instance ?: ViewModelFactory(
-                    Injection.provideNewsRepository(),
-                    Injection.provideHistoryRepository()
-                )
+                    Injection.provideNewsRepository(context),
+                    Injection.provideHistoryRepository(context)
+                ).also { instance = it }
             }
     }
 }
