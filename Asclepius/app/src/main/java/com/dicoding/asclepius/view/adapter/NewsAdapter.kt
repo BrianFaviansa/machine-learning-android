@@ -1,7 +1,9 @@
 package com.dicoding.asclepius.view.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -25,6 +27,11 @@ class NewsAdapter(private val viewModel: MainViewModel) :
                 Glide.with(itemView.context)
                     .load(news.urlToImage)
                     .into(newsPhoto)
+
+                itemView.setOnClickListener {
+                    val browserIntent = Intent(Intent.ACTION_VIEW, news.url?.toUri())
+                    itemView.context.startActivity(browserIntent)
+                }
             }
         }
     }
