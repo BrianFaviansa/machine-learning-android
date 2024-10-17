@@ -23,10 +23,9 @@ import org.tensorflow.lite.task.vision.classifier.Classifications
 import org.tensorflow.lite.task.vision.classifier.ImageClassifier
 
 
-class ImageClassifierHelper(
+class   ImageClassifierHelper(
     private var threshold: Float = 0.1f,
     private var maxResults: Int = 3,
-    private var numThreads: Int = 4,
     private val modelName: String = "cancer_classification.tflite",
     private val context: Context,
     private val classifierListener: ClassifierListener?
@@ -42,7 +41,7 @@ class ImageClassifierHelper(
             .setScoreThreshold(threshold)
             .setMaxResults(maxResults)
         val baseOptionsBuilder = BaseOptions.builder()
-            .setNumThreads(numThreads)
+            .setNumThreads(4)
         optionsBuilder.setBaseOptions(baseOptionsBuilder.build())
 
         try {
@@ -69,9 +68,11 @@ class ImageClassifierHelper(
 
         val bitmap = uriToBitmap(imageUri, context)
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(bitmap))
+        val imageProcessingOptions = ImageProcessingOptions.builder()
+            .build()
 
         var inferenceTime = SystemClock.uptimeMillis()
-        val results = imageClassifier?.classify(tensorImage)
+        val results = imageClassifier?.classify(tensorImage, imageProcessingOptions)
         inferenceTime = SystemClock.uptimeMillis() - inferenceTime
         classifierListener?.onResults(
             results,

@@ -19,7 +19,7 @@ abstract class AsclepiusDatabase : RoomDatabase() {
         fun getInstance(context: Context): AsclepiusDatabase = instance ?: synchronized(this) {
             instance ?: Room.databaseBuilder(
                 context.applicationContext, AsclepiusDatabase::class.java, "asclepius_db"
-            ).build()
+            ).build().also { instance = it }
         }
     }
 }

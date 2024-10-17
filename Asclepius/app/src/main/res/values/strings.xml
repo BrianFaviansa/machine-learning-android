@@ -13,4 +13,5 @@
     <string name="recent_history">Recent History</string>
     <string name="no_recent_history">No recent history</string>
     <string name="history_saved">History saved successfully</string>
+    <string name="unknown_error">Unknown error</string>
 </resources>

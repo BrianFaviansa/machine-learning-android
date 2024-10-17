@@ -4,13 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.dicoding.asclepius.data.local.entity.HistoryEntity
 import com.dicoding.asclepius.databinding.ItemHistoryBinding
-import com.dicoding.asclepius.utils.Utils.formatCardDate
+import com.dicoding.asclepius.utils.Utils.formatHistoryCardDate
 import com.dicoding.asclepius.utils.Utils.formatPercent
-import com.dicoding.asclepius.view.MainViewModel
+import com.dicoding.asclepius.view.HistoryViewModel
 
-class HistoryAdapter(private val viewModel: MainViewModel) :
+class HistoryAdapter(private val viewModel: HistoryViewModel) :
     RecyclerView.Adapter<HistoryAdapter.MyHistoryViewHolder>() {
     private val historyList = mutableListOf<HistoryEntity>()
 
@@ -20,7 +21,10 @@ class HistoryAdapter(private val viewModel: MainViewModel) :
             with(binding) {
                 historyCategory.text = history.category
                 historyScore.text = formatPercent(history.confidenceScore)
-                historyTimeStamp.text = formatCardDate(history.timestamp)
+                historyTimeStamp.text = formatHistoryCardDate(history.timestamp)
+                Glide.with(itemView.context)
+                    .load(history.imageUri)
+                    .into(historyPhoto)
             }
         }
     }

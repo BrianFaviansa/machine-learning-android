@@ -13,14 +13,16 @@ import com.dicoding.asclepius.R
 import com.dicoding.asclepius.data.Result
 import com.dicoding.asclepius.databinding.ActivityHistoryBinding
 import com.dicoding.asclepius.utils.Utils.displayToast
+import com.dicoding.asclepius.view.HistoryViewModel
+import com.dicoding.asclepius.view.HistoryViewModelFactory
 import com.dicoding.asclepius.view.MainViewModel
 import com.dicoding.asclepius.view.ViewModelFactory
 import com.dicoding.asclepius.view.adapter.HistoryAdapter
 
 class HistoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHistoryBinding
-    private val viewModel: MainViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+    private val viewModel: HistoryViewModel by viewModels {
+        HistoryViewModelFactory.getInstance(this)
     }
 
     private lateinit var historyAdapter: HistoryAdapter
@@ -49,7 +51,7 @@ class HistoryActivity : AppCompatActivity() {
         rvHistory.setHasFixedSize(true)
         rvHistory.adapter = historyAdapter
 
-        viewModel.getHistories().observe(this, { histories ->
+        viewModel.getHistories().observe(this) { histories ->
             if (histories != null) {
                 when (histories) {
                     is Result.Loading -> {
@@ -65,8 +67,13 @@ class HistoryActivity : AppCompatActivity() {
                         binding.progressBar.visibility = View.GONE
                         displayToast(this, histories.error)
                     }
+
+                    is Result.SuccessMessage -> {
+                        binding.progressBar.visibility = View.GONE
+                        displayToast(this, histories.message)
+                    }
                 }
             }
-        })
+        }
     }
 }

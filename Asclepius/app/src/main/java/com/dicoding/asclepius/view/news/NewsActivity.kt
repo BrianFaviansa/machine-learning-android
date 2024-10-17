@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dicoding.asclepius.R
 import com.dicoding.asclepius.data.Result
 import com.dicoding.asclepius.databinding.ActivityNewsBinding
 import com.dicoding.asclepius.utils.Utils.displayToast
@@ -53,6 +54,11 @@ class NewsActivity : AppCompatActivity() {
                     is Result.Error -> {
                         binding.progressBar.visibility = View.GONE
                         displayToast(this, newsList.error)
+                    }
+
+                    else -> {
+                        binding.progressBar.visibility = View.GONE
+                        displayToast(this, getString(R.string.unknown_error))
                     }
                 }
             }

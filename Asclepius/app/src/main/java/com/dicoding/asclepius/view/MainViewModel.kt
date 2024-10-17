@@ -10,6 +10,6 @@ class MainViewModel(
     private val historyRepository: HistoryRepository
 ) : ViewModel() {
     fun getNews() = newsRepository.getNews()
-    fun getHistories() = historyRepository.getHistories()
-    fun insertHistory(history: HistoryEntity) = historyRepository.insertHistory(history)
+//    fun getHistories() = historyRepository.getHistories()
+//    fun insertHistory(history: HistoryEntity) = historyRepository.insertHistory(history)
 }

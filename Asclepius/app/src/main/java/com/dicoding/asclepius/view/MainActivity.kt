@@ -35,8 +35,8 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var imageClassifierHelper: ImageClassifierHelper
-    private val viewModel: MainViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+    private val historyViewModel: HistoryViewModel by viewModels {
+        HistoryViewModelFactory.getInstance(this)
     }
 
     private lateinit var historyAdapter: HistoryAdapter
@@ -105,19 +105,23 @@ class MainActivity : AppCompatActivity() {
                                         }
                                 }
                                 if (historyData != null) {
-                                    viewModel.insertHistory(historyData).observe(this@MainActivity) { results ->
+                                    historyViewModel.insertHistory(historyData).observe(this@MainActivity) { results ->
                                         if (results != null) {
                                             when (results) {
                                                 is Result.Loading -> {
                                                     binding.progressIndicator.visibility = View.VISIBLE
                                                 }
-                                                is  Result.Success -> {
+                                                is  Result.SuccessMessage -> {
                                                     binding.progressIndicator.visibility = View.GONE
-                                                    displayToast(this@MainActivity, getString(R.string.history_saved))
+                                                    displayToast(this@MainActivity, results.message)
                                                 }
                                                 is  Result.Error -> {
                                                     binding.progressIndicator.visibility = View.GONE
                                                     displayToast(this@MainActivity, results.error)
+                                                }
+                                                else -> {
+                                                    binding.progressIndicator.visibility = View.GONE
+                                                    displayToast(this@MainActivity, "Unknown error")
                                                 }
                                             }
                                         }
@@ -136,6 +140,12 @@ class MainActivity : AppCompatActivity() {
         )
 
         setupRecyclerView()
+        observeHistories()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        observeHistories()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -220,14 +230,15 @@ class MainActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         rvHistory = binding.rvHistory
         rvHistory.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        historyAdapter = HistoryAdapter(viewModel)
-        rvHistory.setHasFixedSize(true)
+        historyAdapter = HistoryAdapter(historyViewModel)
         rvHistory.adapter = historyAdapter
+    }
 
-        viewModel.getHistories().observe(this) { histories ->
+    private fun observeHistories() {
+               historyViewModel.getHistories().observe(this) { histories ->
             if (histories != null) {
                 when (histories) {
-                    Result.Loading -> {
+                    is Result.Loading -> {
                         binding.progressIndicator.visibility = View.VISIBLE
                     }
                     is Result.Success -> {
@@ -238,10 +249,15 @@ class MainActivity : AppCompatActivity() {
                         binding.progressIndicator.visibility = View.GONE
                         displayToast(this, histories.error)
                     }
+                    is Result.SuccessMessage -> {
+                        binding.progressIndicator.visibility = View.GONE
+                        displayToast(this, histories.message)
+                    }
                 }
             }
         }
     }
+
 
     companion object {
         private const val REQUIRED_PERMISSION = Manifest.permission.CAMERA

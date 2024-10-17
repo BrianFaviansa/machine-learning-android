@@ -20,7 +20,7 @@ class HistoryRepository private constructor(private val historyDao: HistoryDao) 
         emit(Result.Loading)
         try {
             historyDao.insertHistory(history)
-            emit(Result.Success(history))
+            emit(Result.SuccessMessage("History saved successfully"))
         } catch (e: Exception) {
             emit(Result.Error(e.message.toString()))
         }
