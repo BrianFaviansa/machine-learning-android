@@ -24,6 +24,7 @@
                 android:background="?attr/colorPrimary"
                 app:menu="@menu/menu"
                 android:title="@string/app_name"
+                app:titleTextColor="@color/on_light_blue"
                 />
         </com.google.android.material.appbar.AppBarLayout>
 
